@@ -188,6 +188,7 @@ export default function Home() {
         />
         <img
           src={"/images/background/Sobre_Inicio.png"}
+          alt="Sobre de inicio"
           className="absolute top-0 -z-1"
         />
         <h1 className="main-title mt-[270px] text-xl">¡NOS CASAMOS!</h1>
@@ -197,12 +198,12 @@ export default function Home() {
         <div className="hrVertical"></div>
         <img
           src={"/images/polaroid/1.png"}
-          alt="Imagen de la boda"
+          alt="Imagen de la boda 1"
           className="w-[300px] mx-auto"
         />
         <img
           src={"/images/background/Ilustracion_Division.png"}
-          alt="Imagen de la boda"
+          alt="Ilustración de división"
           className="mt-[-50px] -z-10"
         />
         <div className="info-container flex flex-col gap-3">
