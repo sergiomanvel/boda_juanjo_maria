@@ -343,7 +343,7 @@ export default function Home() {
                     <label htmlFor="allergies_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>
-                <div className="text-[9px] font-light">* En caso de marcar "SI", por favor, especifique en el siguiente cuadro:</div>
+                <div className="text-[9px] font-light">* En caso de marcar &quot;SI&quot;, por favor, especifique en el siguiente cuadro:</div>
                 <input type="text" className="bg-[#8dad88] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1" placeholder="Ejemplo: Matías - Frutos secos..." id="allergies" />
                 <button type="submit" className="btnSend cursor-pointer text-[#fff] hover:text-[#5d7259] bg-[#809e76] hover:bg-[white] text-sm font-light px-8 py-2 transition-colors absolute top-[97%] left-[50%] -translate-x-1/2">Enviar</button>
               </form>
