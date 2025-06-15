@@ -1,26 +1,216 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+/* Nohemi Font Family */
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-ExtraLight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ImperialScript';
+  src: url('/fonts/imperial_script/ImperialScript-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-ExtraBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('/fonts/nohemi/Nohemi-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: #0a0a0a;
+  font-family: 'Nohemi', sans-serif;
+  text-align: center;
+  /* background: url('/images/background/Textura_Papel.png') repeat; */
+}
+
+.app-container {
+  width: 430px;
+  margin: 0 auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-container {
+  background: url('/images/background/Degradado_Sup_blanco.png'), 
+              url('/images/background/Degradado_Inf_blanco.png');
+  background-repeat: no-repeat;
+  background-position: center -200px, center 2040px;
+}
+
+.main-title {
+  font-family: "Nohemi";
+  font-weight: 300;
+}
+
+.subtitle {
+  font-family: "ImperialScript";
+  color: #819b80;
+}
+
+
+/* Después de la animación, ocultar el cursor */
+.subtitle.animation-complete {
+  border-right: none;
+}
+
+.hrVertical {
+  border-left: 1px solid #58524c;
+  height: 70px;
+  width: 0;
+  margin: 40px auto 0 auto;
+}
+
+.audio-player {
+  background-color: #839f7c;
+  /* Verde similar */
+  border-radius: 25px;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  margin: -45px auto 0 auto;
+}
+
+.play-button {
+  width: 0;
+  height: 0;
+  border-left: 12px solid white;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  margin-right: 15px;
+  opacity: 0.3;
+}
+
+.play-button.active, .pause-bars.active {
+  opacity: 1;
+  cursor: pointer
+}
+
+.pause-bars {
+  display: flex;
+  gap: 3px;
+  margin-right: 15px;
+  opacity: .3;
+}
+
+.pause-bar {
+  width: 4px;
+  height: 16px;
+  background-color: white;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background-color: #698261;
+  border-radius: 3px;
+  position: relative;
+}
+.progress-bar-filled {
+  height: 6px;
+  background-color: white;
+  border-radius: 3px;
+  position: absolute;
+  width: 0;
+}
+
+.progress-thumb {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  /* % del progreso */
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.ubicacion{
+  background-image: url('/images/iconos/Iconolugar.png'), url('/images/iconos/Bocadillolugar.png'), url("/images/iconos/Mapalugar.png");
+  background-repeat: no-repeat;
+  background-position: center,50% 70px, center;
+  background-size: 30px, 200px, contain;
+  height: 300px;
+}
+
+.ubicacion a, .recomendacion, .formulario{
+  border-top-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.rombo::before{
+  content:"♦";
+  color: #8dad84;
+  font-size: 30px;
+  margin-right:10px;
+  position: relative;
+  top:5px
+}
+
+.btnUbi, .btnSend{
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
