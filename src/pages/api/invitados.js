@@ -1,22 +1,44 @@
-import { openDB, initDB } from "@/db";
+import { supabase } from "@/db";
 
 export default async function handler(req, res) {
-  await initDB();
-  const db = await openDB();
   if (req.method === "POST") {
-    const { nombre, vendras } = req.body;
-    if (!nombre || typeof vendras === "undefined") {
+    const { guestNames, attendance, children, allergies, sugerencia } = req.body;
+    
+    if (!guestNames || typeof attendance === "undefined") {
       return res.status(400).json({ error: "Faltan datos obligatorios" });
     }
-    const fecha_registro = new Date();
-    const [result] = await db.query(
-      "INSERT INTO Invitados (nombre, vendras, fecha_registro) VALUES (?, ?, ?)",
-      [nombre, vendras, fecha_registro]
-    );
-    return res.status(201).json({ id: result.insertId, nombre, vendras, fecha_registro });
+
+    const { data, error } = await supabase
+      .from('invitados')
+      .insert([
+        {
+          nombre: guestNames,
+          vendras: attendance === 'yes',
+          hijos: children,
+          alergias: allergies || '',
+          sugerencia: sugerencia || '',
+          fecha_registro: new Date().toISOString()
+        }
+      ])
+      .select();
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(201).json(data[0]);
+    
   } else if (req.method === "GET") {
-    const [invitados] = await db.query("SELECT * FROM Invitados");
-    return res.status(200).json(invitados);
+    const { data, error } = await supabase
+      .from('invitados')
+      .select('*');
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(200).json(data);
+    
   } else {
     res.status(405).json({ error: "Método no permitido" });
   }

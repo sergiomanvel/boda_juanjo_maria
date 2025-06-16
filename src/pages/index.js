@@ -136,6 +136,7 @@ export default function Home() {
         childInput.type = "text";
         childInput.placeholder = `Ejemplo: Marta López`;
         childInput.className = "bg-[#9ec398] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1 mb-2";
+        childInput.name = 'childrenNames';
         childrenDiv.appendChild(div);
         childrenDiv.appendChild(childInput);
       }
@@ -206,7 +207,7 @@ export default function Home() {
           alt="Ilustración de división"
           className="mt-[-50px] -z-10"
         />
-        <div className="info-container flex flex-col gap-3">
+        <div className="info-container flex flex-col gap-3 p-10">
           <img
             className="w-[150px]"
             src={"/images/iconos/Recepcion_2.png"}
@@ -266,7 +267,7 @@ export default function Home() {
             <p className="text-[#513939] font-light text-lg">¡Déjanos una recomendación para</p>
             <p className="text-[#513939] font-light text-lg">bailar hasta el amanecer!</p>
             <div className="recomendacion text-[#5e7259] bg-[#bed2b9] text-xs font-light p-4 m-7">
-              <input type="text" id="musicaSugerencia" name="musicaSugerencia" className="w-full bg-[#bed2b9] text-[#5e7259] border-none outline-none" placeholder="Ejemplo: Mocatriz – Ojete calor/Espectacular – Fangoria, etc..." />
+              <input type="text" id="sugerencia" name="sugerencia" className="w-full bg-[#bed2b9] text-[#5e7259] border-none outline-none" placeholder="Ejemplo: Mocatriz – Ojete calor/Espectacular – Fangoria, etc..." />
             </div>
 
             <img
@@ -287,16 +288,15 @@ export default function Home() {
               </div>
               <form className="formulario bg-[#bed2b9] p-5 text-left mt-2 relative" onSubmit={async (e) => {
                 e.preventDefault();
-                const musicaSugerencia = document.getElementById("musicaSugerencia").value;
-                // Recoge otros campos del formulario aquí
-                // Por ejemplo:
+                const sugerencia = document.getElementById("sugerencia").value;
                 const guestNames = document.getElementById("guestNames").value;
                 const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
-                const children = document.querySelector('input[name="children"]:checked')?.value;
-                const childrenCount = document.getElementById("childrenCount").value;
+                const childrenInputs = document.querySelectorAll('input[name="childrenNames"]');
+                const children = JSON.stringify(Array.from(childrenInputs).map(input => input.value).filter(value => value.trim() !== ''));
+
                 const allergies = document.getElementById("allergies").value;
                 // Aquí puedes construir el objeto a enviar
-                const data = { guestNames, attendance, children, childrenCount, allergies, musicaSugerencia };
+                const data = { guestNames, attendance, children, /*childrenCount,*/ allergies, sugerencia };
                 await fetch("/api/invitados", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
