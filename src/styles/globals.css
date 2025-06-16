@@ -201,13 +201,16 @@ body {
   border-bottom-right-radius: 20px;
 }
 
-.rombo::before{
-  content:"♦";
-  color: #8dad84;
-  font-size: 30px;
-  margin-right:10px;
+.rombo::before {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: #8dad84;
+  transform: rotate(45deg);
+  margin-right: 10px;
   position: relative;
-  top:5px
+  top: 5px;
+  content: "";
 }
 
 .btnUbi, .btnSend{

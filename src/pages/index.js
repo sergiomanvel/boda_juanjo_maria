@@ -70,34 +70,6 @@ export default function Home() {
       }
     };
   }, []);
-  useEffect(() => {
-    const handleTouchMove = (e) => {
-      const progressBar = document.querySelector(".progress-bar");
-      if (progressBar) {
-        const rect = progressBar.getBoundingClientRect();
-        const offsetX = e.touches[0].clientX - rect.left;
-        const percentage = offsetX / rect.width;
-        if (audioRef.current) {
-          audioRef.current.currentTime = percentage * audioRef.current.duration;
-        }
-      }
-    };
-    document.addEventListener("touchmove", handleTouchMove);
-    return () => {
-      document.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, []);
-  useEffect(() => {
-    const handleTouchEnd = () => {
-      if (audioRef.current) {
-        audioRef.current.play();
-      }
-    };
-    document.addEventListener("touchend", handleTouchEnd);
-    return () => {
-      document.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
   const play = () => {
     if (audioRef.current) {
       audioRef.current.play();
@@ -159,8 +131,35 @@ export default function Home() {
     setChildrenCount(0); // Reset state
     const childrenDiv = document.getElementById("children");
     childrenDiv.innerHTML = ""; // Clear children inputs
+  };  /* END CHILDREN */
+
+  /* START FORM SUBMISSION */
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const clearForm = () => {
+    // Clear text inputs
+    document.getElementById("sugerencia").value = "";
+    document.getElementById("guestNames").value = "";
+    document.getElementById("allergies").value = "";
+    
+    // Clear radio buttons
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    radioButtons.forEach(radio => radio.checked = false);
+    
+    // Clear children count and reset state
+    setChildrenCount(0);
+    const childrenInput = document.getElementById("childrenCount");
+    childrenInput.value = 0;
+    childrenInput.disabled = true;
+    
+    // Clear children inputs
+    const childrenDiv = document.getElementById("children");
+    childrenDiv.innerHTML = "";
+    childrenDiv.classList.add("hidden");
   };
-  /* END CHILDREN */
+  /* END FORM SUBMISSION */
+
   // Add event listeners for children radio buttons and input
   useEffect(() => {
     const yesRadio = document.getElementById("children_yes");
@@ -207,17 +206,17 @@ export default function Home() {
           alt="Ilustración de división"
           className="mt-[-50px] -z-10"
         />
-        <div className="info-container flex flex-col gap-3 p-10">
+        <div className="info-container flex flex-col gap-3">
           <img
-            className="w-[150px]"
+            className="w-[150px] ml-5"
             src={"/images/iconos/Recepcion_2.png"}
           />
           <img
-            className="w-[150px] self-end "
+            className="w-[150px] self-end relative right-5"
             src={"/images/iconos/Ceremonia_2.png"}
           />
           <img
-            className="w-[150px]"
+            className="w-[150px] ml-5"
             src={"/images/iconos/Celebracion_2.png"}
           />
           <img
@@ -285,24 +284,42 @@ export default function Home() {
                 <div className="border-b-2 border-b-[#513939] w-[140px] h-7 mr-3"></div>
                 <div className="font-base text-lg mt-2">Confirmación de asistencia</div>
 
-              </div>
-              <form className="formulario bg-[#bed2b9] p-5 text-left mt-2 relative" onSubmit={async (e) => {
+              </div>              <form className="formulario bg-[#bed2b9] p-5 text-left mt-2 relative" onSubmit={async (e) => {
                 e.preventDefault();
-                const sugerencia = document.getElementById("sugerencia").value;
-                const guestNames = document.getElementById("guestNames").value;
-                const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
-                const childrenInputs = document.querySelectorAll('input[name="childrenNames"]');
-                const children = JSON.stringify(Array.from(childrenInputs).map(input => input.value).filter(value => value.trim() !== ''));
+                setIsSubmitting(true);
+                
+                try {
+                  const sugerencia = document.getElementById("sugerencia").value;
+                  const guestNames = document.getElementById("guestNames").value;
+                  const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
+                  const childrenInputs = document.querySelectorAll('input[name="childrenNames"]');
+                  const children = JSON.stringify(Array.from(childrenInputs).map(input => input.value).filter(value => value.trim() !== ''));
 
-                const allergies = document.getElementById("allergies").value;
-                // Aquí puedes construir el objeto a enviar
-                const data = { guestNames, attendance, children, /*childrenCount,*/ allergies, sugerencia };
-                await fetch("/api/invitados", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(data)
-                });
-                // Opcional: mostrar mensaje de éxito o limpiar formulario
+                  const allergies = document.getElementById("allergies").value;
+                  // Aquí puedes construir el objeto a enviar
+                  const data = { guestNames, attendance, children, /*childrenCount,*/ allergies, sugerencia };
+                  
+                  const response = await fetch("/api/invitados", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                  });
+
+                  if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    setShowSuccessMessage(true);
+                    // Limpiar formulario
+                    clearForm();
+                    // Ocultar mensaje después de 5 segundos
+                    setTimeout(() => {
+                      setShowSuccessMessage(false);
+                    }, 5000);
+                  }
+                } catch (error) {
+                  console.error('Error al enviar el formulario:', error);
+                } finally {
+                  setIsSubmitting(false);
+                }
               }}>
                 <div className="text-[#513939] text-sm font-light rombo">¿Nos acompañarás en este día tan especial?</div>
                 <div className="radio-group flex gap-4 ml-5">
@@ -326,7 +343,7 @@ export default function Home() {
                   </div>
                   <input type="number" disabled className="bg-[#8dad88] text-[#4f6f4a] text-sm rounded-[5px] px-4 py-2 border-0 outline-0 focus:outline-1" value={childrenCount} min="0" max="10" id="childrenCount" />
                   <div className="radio-option">
-                    <input type="radio" id="children_no" name="children" value="no" required/>
+                    <input type="radio" id="children_no" name="children" value="no" required checked/>
                     <label htmlFor="children_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>
@@ -339,13 +356,27 @@ export default function Home() {
                     <label htmlFor="allergies_yes" className="ml-2 text-lg">SI</label>
                   </div>
                   <div className="radio-option">
-                    <input type="radio" id="allergies_no" name="allergies" value="no" required/>
+                    <input type="radio" id="allergies_no" name="allergies" value="no" required checked/>
                     <label htmlFor="allergies_no" className="ml-2 text-lg">NO</label>
                   </div>
-                </div>
-                <div className="text-[9px] font-light">* En caso de marcar &quot;SI&quot;, por favor, especifique en el siguiente cuadro:</div>
+                </div>                <div className="text-[9px] font-light">* En caso de marcar &quot;SI&quot;, por favor, especifique en el siguiente cuadro:</div>
                 <input type="text" className="bg-[#8dad88] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1" placeholder="Ejemplo: Matías - Frutos secos..." id="allergies" />
-                <button type="submit" className="btnSend cursor-pointer text-[#fff] hover:text-[#5d7259] bg-[#809e76] hover:bg-[white] text-sm font-light px-8 py-2 transition-colors absolute top-[97%] left-[50%] -translate-x-1/2">Enviar</button>
+                
+                {/* Success Message */}
+                {showSuccessMessage && (
+                  <div className="success-message bg-[#8dad88] text-white text-center py-3 px-4 rounded-[15px] mt-4 mb-4">
+                    <p className="text-sm font-medium">¡Formulario enviado correctamente! ✓</p>
+                    <p className="text-xs mt-1">Gracias por confirmar tu asistencia</p>
+                  </div>
+                )}
+                
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className={`btnSend cursor-pointer text-[#fff] hover:text-[#5d7259] bg-[#809e76] hover:bg-[white] text-sm font-light px-8 py-2 transition-colors absolute top-[97%] left-[50%] -translate-x-1/2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {isSubmitting ? 'Enviando...' : 'Enviar'}
+                </button>
               </form>
 
             </div>
