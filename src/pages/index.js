@@ -37,7 +37,7 @@ export default function Home() {
       }
     };
   }
-  , []);
+    , []);
   useEffect(() => {
     const progressBar = document.querySelector(".progress-bar");
     if (progressBar) {
@@ -85,6 +85,25 @@ export default function Home() {
     }
   }
 
+  const [firstUserInteraction, setFirstUserInteraction] = useState(false);
+  const handleUserInteraction = () => {
+    setFirstUserInteraction(true);
+    document.removeEventListener("click", handleUserInteraction);
+    document.removeEventListener("touchstart", handleUserInteraction);
+  };
+  useEffect(() => {
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, []);
+  useEffect(() => {
+    if (!firstUserInteraction) return;
+    play()
+  }, [firstUserInteraction])
   /* END AUDIO */
 
   /* START CHILDREN */
@@ -142,17 +161,17 @@ export default function Home() {
     document.getElementById("sugerencia").value = "";
     document.getElementById("guestNames").value = "";
     document.getElementById("allergies").value = "";
-    
+
     // Clear radio buttons
     const radioButtons = document.querySelectorAll('input[type="radio"]');
     radioButtons.forEach(radio => radio.checked = false);
-    
+
     // Clear children count and reset state
     setChildrenCount(0);
     const childrenInput = document.getElementById("childrenCount");
     childrenInput.value = 0;
     childrenInput.disabled = true;
-    
+
     // Clear children inputs
     const childrenDiv = document.getElementById("children");
     childrenDiv.innerHTML = "";
@@ -179,7 +198,43 @@ export default function Home() {
 
   return (
     <div className="app-container">
-      <div className="content relative">
+      <form className="content relative"onSubmit={async (e) => {
+                e.preventDefault();
+                setIsSubmitting(true);
+
+                try {
+                  const sugerencia = document.getElementById("sugerencia").value;
+                  const guestNames = document.getElementById("guestNames").value;
+                  const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
+                  const childrenInputs = document.querySelectorAll('input[name="childrenNames"]');
+                  const children = JSON.stringify(Array.from(childrenInputs).map(input => input.value).filter(value => value.trim() !== ''));
+
+                  const allergies = document.getElementById("allergies").value;
+                  // Aquí puedes construir el objeto a enviar
+                  const data = { guestNames, attendance, children, /*childrenCount,*/ allergies, sugerencia };
+
+                  const response = await fetch("/api/invitados", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                  });
+
+                  if (response.ok) {
+                    // Mostrar mensaje de éxito
+                    setShowSuccessMessage(true);
+                    // Limpiar formulario
+                    clearForm();
+                    // Ocultar mensaje después de 5 segundos
+                    setTimeout(() => {
+                      setShowSuccessMessage(false);
+                    }, 5000);
+                  }
+                } catch (error) {
+                  console.error('Error al enviar el formulario:', error);
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}>
         <audio
           ref={audioRef}
           src="/audio/contigo.mp3"
@@ -265,6 +320,7 @@ export default function Home() {
             <p className="text-[#809e76] text-4xl">¡Dale caña!</p>
             <p className="text-[#513939] font-light text-lg">¡Déjanos una recomendación para</p>
             <p className="text-[#513939] font-light text-lg">bailar hasta el amanecer!</p>
+            
             <div className="recomendacion text-[#5e7259] bg-[#bed2b9] text-xs font-light p-4 m-7">
               <input type="text" id="sugerencia" name="sugerencia" className="w-full bg-[#bed2b9] text-[#5e7259] border-none outline-none" placeholder="Ejemplo: Mocatriz – Ojete calor/Espectacular – Fangoria, etc..." required />
             </div>
@@ -284,51 +340,16 @@ export default function Home() {
                 <div className="border-b-2 border-b-[#513939] w-[140px] h-7 mr-3"></div>
                 <div className="font-base text-lg mt-2">Confirmación de asistencia</div>
 
-              </div>              <form className="formulario bg-[#bed2b9] p-5 text-left mt-2 relative" onSubmit={async (e) => {
-                e.preventDefault();
-                setIsSubmitting(true);
-                
-                try {
-                  const sugerencia = document.getElementById("sugerencia").value;
-                  const guestNames = document.getElementById("guestNames").value;
-                  const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
-                  const childrenInputs = document.querySelectorAll('input[name="childrenNames"]');
-                  const children = JSON.stringify(Array.from(childrenInputs).map(input => input.value).filter(value => value.trim() !== ''));
-
-                  const allergies = document.getElementById("allergies").value;
-                  // Aquí puedes construir el objeto a enviar
-                  const data = { guestNames, attendance, children, /*childrenCount,*/ allergies, sugerencia };
-                  
-                  const response = await fetch("/api/invitados", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                  });
-
-                  if (response.ok) {
-                    // Mostrar mensaje de éxito
-                    setShowSuccessMessage(true);
-                    // Limpiar formulario
-                    clearForm();
-                    // Ocultar mensaje después de 5 segundos
-                    setTimeout(() => {
-                      setShowSuccessMessage(false);
-                    }, 5000);
-                  }
-                } catch (error) {
-                  console.error('Error al enviar el formulario:', error);
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }}>
+              </div>              
+              <div className="formulario bg-[#bed2b9] p-5 text-left mt-2 relative" >
                 <div className="text-[#513939] text-sm font-light rombo">¿Nos acompañarás en este día tan especial?</div>
                 <div className="radio-group flex gap-4 ml-5">
                   <div className="radio-option">
-                    <input type="radio" id="attend_yes" name="attendance" value="yes" required/>
+                    <input type="radio" id="attend_yes" name="attendance" value="yes" required />
                     <label htmlFor="attend_yes" className="ml-2 text-lg">SI</label>
                   </div>
                   <div className="radio-option">
-                    <input type="radio" id="attend_no" name="attendance" value="no" required/>
+                    <input type="radio" id="attend_no" name="attendance" value="no" required />
                     <label htmlFor="attend_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>
@@ -338,12 +359,12 @@ export default function Home() {
                 <div className="text-[#513939] text-sm font-light rombo">¿Vendrán niños?</div>
                 <div className="radio-group  flex gap-4 ml-5">
                   <div className="radio-option">
-                    <input type="radio" id="children_yes" name="children" value="yes" required/>
+                    <input type="radio" id="children_yes" name="children" value="yes" required />
                     <label htmlFor="children_yes" className="ml-2 text-lg">SI</label>
                   </div>
                   <input type="number" disabled className="bg-[#8dad88] text-[#4f6f4a] text-sm rounded-[5px] px-4 py-2 border-0 outline-0 focus:outline-1" value={childrenCount} min="0" max="10" id="childrenCount" />
                   <div className="radio-option">
-                    <input type="radio" id="children_no" name="children" value="no" required defaultChecked/>
+                    <input type="radio" id="children_no" name="children" value="no" required defaultChecked />
                     <label htmlFor="children_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>
@@ -352,16 +373,16 @@ export default function Home() {
                 <div className="text-[#513939] text-sm font-light rombo">¿Tiene algún alérgeno?</div>
                 <div className="radio-group  flex gap-4 ml-5">
                   <div className="radio-option">
-                    <input type="radio" id="allergies_yes" name="allergies" value="yes" required/>
+                    <input type="radio" id="allergies_yes" name="allergies" value="yes" required />
                     <label htmlFor="allergies_yes" className="ml-2 text-lg">SI</label>
                   </div>
                   <div className="radio-option">
-                    <input type="radio" id="allergies_no" name="allergies" value="no" required defaultChecked/>
+                    <input type="radio" id="allergies_no" name="allergies" value="no" required defaultChecked />
                     <label htmlFor="allergies_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>                <div className="text-[9px] font-light">* En caso de marcar &quot;SI&quot;, por favor, especifique en el siguiente cuadro:</div>
                 <input type="text" className="bg-[#8dad88] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1" placeholder="Ejemplo: Matías - Frutos secos..." id="allergies" />
-                
+
                 {/* Success Message */}
                 {showSuccessMessage && (
                   <div className="success-message bg-[#8dad88] text-white text-center py-3 px-4 rounded-[15px] mt-4 mb-4">
@@ -369,16 +390,15 @@ export default function Home() {
                     <p className="text-xs mt-1">Gracias por confirmar tu asistencia</p>
                   </div>
                 )}
-                
-                <button 
-                  type="submit" 
+
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className={`btnSend cursor-pointer text-[#fff] hover:text-[#5d7259] bg-[#809e76] hover:bg-[white] text-sm font-light px-8 py-2 transition-colors absolute top-[97%] left-[50%] -translate-x-1/2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {isSubmitting ? 'Enviando...' : 'Enviar'}
                 </button>
-              </form>
-
+              </div>
             </div>
             <div className="text-left ml-5">
               <p className="rombo text-[#513939] text-sm font-light p-3"> Si vienes de lejos tenemos algunas opciones de alojamiento:</p>
@@ -400,7 +420,7 @@ export default function Home() {
           </div>
           <footer className="bg-[#e8e8e8] text-[#81827a] text-xs font-light py-2 mt-15">JUANJO & MARÍA</footer>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
