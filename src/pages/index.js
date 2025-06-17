@@ -310,7 +310,7 @@ export default function Home() {
             />
             <p className="text-[#809e76] text-4xl">¿Qué me pongo?</p>
             <p className="text-[#513939] font-extralight text-sm mt-2">Ni trajes, ni corbatas, ni vestidos ajustados, </p>
-            <p className="text-[#513939] font-extralight text-sm">mejor cómods y bien despeinados. Y no</p>
+            <p className="text-[#513939] font-extralight text-sm">mejor cómodos y bien despeinados. Y no</p>
             <p className="text-[#513939] font-extralight text-sm">preguntes a qué hora termina,</p>
             <p className="text-[#513939] font-semibold text-base">¡porque la fiesta sigue hasta que el sol ilumina!</p>
 
