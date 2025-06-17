@@ -355,7 +355,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="text-[9px] font-light">* Tanto en respuesta afirmativa cómo negativa, por favor, indique su nombre...:</div>
-                <input type="text" className="bg-[#8dad88] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1" placeholder="Ejemplo: Matías López y Larisa Martínez" id="guestNames" />
+                <input type="text" className="bg-[#8dad88] text-[#4f6f4a] text-sm w-full rounded-[25px] px-4 py-2 border-0 outline-0 focus:outline-1" placeholder="Ejemplo: Matías López y Larisa Martínez" id="guestNames" required/>
 
                 <div className="text-[#513939] text-sm font-light rombo">¿Vendrán niños?</div>
                 <div className="radio-group  flex gap-4 ml-5">
