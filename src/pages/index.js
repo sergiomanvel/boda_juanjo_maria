@@ -322,7 +322,7 @@ export default function Home() {
             <p className="text-[#513939] font-light text-lg">bailar hasta el amanecer!</p>
             
             <div className="recomendacion text-[#5e7259] bg-[#bed2b9] text-xs font-light p-4 m-7">
-              <input type="text" id="sugerencia" name="sugerencia" className="w-full bg-[#bed2b9] text-[#5e7259] border-none outline-none" placeholder="Ejemplo: Mocatriz – Ojete calor/Espectacular – Fangoria, etc..." />
+              <input type="text" id="sugerencia" name="sugerencia" className="w-full bg-[#bed2b9] text-[#5e7259] border-none outline-none" placeholder="Ejemplo: Mocatriz – Ojete calor/Espectacular – Fangoria, etc..." required />
             </div>
 
             <img
