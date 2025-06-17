@@ -343,7 +343,7 @@ export default function Home() {
                   </div>
                   <input type="number" disabled className="bg-[#8dad88] text-[#4f6f4a] text-sm rounded-[5px] px-4 py-2 border-0 outline-0 focus:outline-1" value={childrenCount} min="0" max="10" id="childrenCount" />
                   <div className="radio-option">
-                    <input type="radio" id="children_no" name="children" value="no" required checked/>
+                    <input type="radio" id="children_no" name="children" value="no" required defaultChecked/>
                     <label htmlFor="children_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export default function Home() {
                     <label htmlFor="allergies_yes" className="ml-2 text-lg">SI</label>
                   </div>
                   <div className="radio-option">
-                    <input type="radio" id="allergies_no" name="allergies" value="no" required checked/>
+                    <input type="radio" id="allergies_no" name="allergies" value="no" required defaultChecked/>
                     <label htmlFor="allergies_no" className="ml-2 text-lg">NO</label>
                   </div>
                 </div>                <div className="text-[9px] font-light">* En caso de marcar &quot;SI&quot;, por favor, especifique en el siguiente cuadro:</div>
