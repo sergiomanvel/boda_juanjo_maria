@@ -4,24 +4,23 @@ export default function Home() {
 
   /* START AUDIO */
   const audioRef = useRef(null);
-  const [timeSound, setTimeSound] = useState(0);
+  const timeSoundRef = useRef(0);
   useEffect(() => {
     const audio = audioRef.current;
     audio.volume = 0.4; // Set initial volume
     if (audio) {
       audio.addEventListener("timeupdate", () => {
-        setTimeSound(audio.currentTime);
-        const progressBarFilled = document.querySelector(".progress-bar-filled");
-        const progressThumb = document.querySelector(".progress-thumb");
-        if (progressBarFilled && progressThumb) {
-          const percentage = (audio.currentTime / audio.duration) * 100;
-          progressBarFilled.style.width = `${percentage}%`;
-          progressThumb.style.left = `${percentage}%`;
-        }
-      }
-      );
+  timeSoundRef.current = audio.currentTime;
+  const progressBarFilled = document.querySelector(".progress-bar-filled");
+  const progressThumb = document.querySelector(".progress-thumb");
+  if (progressBarFilled && progressThumb) {
+    const percentage = (audio.currentTime / audio.duration) * 100;
+    progressBarFilled.style.width = `${percentage}%`;
+    progressThumb.style.left = `${percentage}%`;
+  }
+});
       audio.addEventListener("ended", () => {
-        setTimeSound(0);
+        timeSoundRef.current = 0;
         const progressBarFilled = document.querySelector(".progress-bar-filled");
         const progressThumb = document.querySelector(".progress-thumb");
         if (progressBarFilled && progressThumb) {
@@ -101,9 +100,11 @@ export default function Home() {
     };
   }, []);
   useEffect(() => {
-    if (!firstUserInteraction) return;
-    play()
-  }, [firstUserInteraction])
+    if (firstUserInteraction) {
+      play();
+      setFirstUserInteraction(false);
+    }
+  }, [firstUserInteraction, play]);
   /* END AUDIO */
 
   /* START CHILDREN */
@@ -198,7 +199,7 @@ export default function Home() {
 
   return (
     <div className="app-container">
-      <form className="content relative"onSubmit={async (e) => {
+      <form className="content relative" onSubmit={async (e) => {
                 e.preventDefault();
                 setIsSubmitting(true);
 
